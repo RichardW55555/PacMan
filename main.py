@@ -10,36 +10,41 @@ pygame.display.set_caption("Score: %s" % (0))
 clock = pygame.time.Clock()
 
 class Player:
-    def __init__(self):
-        self.position = (int(width//2), int(((height/4)*2.8)//1))
+    def __init__(self, tileSize, mapSize):
+        self.position = (int((mapSize[0]//2*tileSize)+(tileSize//2)), int((mapSize[1]//4*tileSize)+(tileSize//2)))
         self.size = 17
         self.score = 0
+        self.speed = tileSize
     
     def draw(self):
         pygame.draw.circle(screen, "yellow", self.position, self.size)
     
-    def move(self, up, left, down, right):
+    def move(self, up, left, down, right, walls):
         position = self.position
         
         if up :
-            new_y = position[1] - 5
-            if new_y < 0:
-                return
+            new_y = position[1] - self.speed
+            for w in walls:
+                if w.colliderect(pygame.Rect(self.position[0]-self.size, new_y-self.size, self.size*2, self.size*2)):
+                    return
             position = (position[0], new_y)
         if left:
-            new_x = position[0] - 5
-            if new_x < 0:
-                return
+            new_x = position[0] - self.speed
+            for w in walls:
+                if w.colliderect(pygame.Rect(new_x-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
+                    return
             position = (new_x, position[1])
         if down:
-            new_y = position[1] + 5
-            if new_y > height:
-                return
+            new_y = position[1] + self.speed
+            for w in walls:
+                if w.colliderect(pygame.Rect(self.position[0]-self.size, new_y-self.size, self.size*2, self.size*2)):
+                    return
             position = (position[0], new_y)
         if right:
-            new_x = position[0] + 5
-            if new_x > width:
-                return
+            new_x = position[0] + self.speed
+            for w in walls:
+                if w.colliderect(pygame.Rect(new_x-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
+                    return
             position = (new_x, position[1])
         
         self.position = position
@@ -49,16 +54,58 @@ def terminate():
     sys.exit()
 
 while True:
+    tileSize = 40
+    map = [
+        "............##............",
+        ".####.#####.##.#####.####.",
+        ".####.#####.##.#####.####.",
+        ".####.#####.##.#####.####.",
+        "..........................",
+        ".####.##.########.##.####.",
+        ".####.##.########.##.####.",
+        "......##....##....##......",
+        "#####.#####.##.#####.#####",
+        "#####.#####.##.#####.#####",
+        "#####.##..........##.#####",
+        "#####.##.--------.##.#####",
+        "#####.##.--------.##.#####",
+        ".........--------.........",
+        "#####.##.--------.##.#####",
+        "#####.##.--------.##.#####",
+        "#####.##..........##.#####",
+        "#####.##.########.##.#####",
+        "#####.##.########.##.#####",
+        "............##............",
+        ".####.#####.##.#####.####.",
+        ".####.#####.##.#####.####.",
+        "...##................##...",
+        "##.##.##.########.##.##.##",
+        "##.##.##.########.##.##.##",
+        "......##....##....##......",
+        ".##########.##.###########",
+        ".##########.##.###########",
+        "..........................",
+    ]
+
+    walls = []
+    pellets = []
+    for rowI, row in enumerate(map):
+        for colI, char in enumerate(row):
+            x = colI*tileSize
+            y = rowI*tileSize
+
+            if char == "#":
+                walls.append(pygame.Rect(x, y, tileSize, tileSize))
+            elif char == ".":
+                pellets.append((x+tileSize//2, y+tileSize//2))
+    
     up = False
     left = False
     down = False
     right = False
-    PacMan = Player()
 
-    pellets = []
-    for x in range(20, width, 20):
-        for y in range(20, height, 20):
-            pellets.append((x, y))
+    PacMan = Player(tileSize, (len(map[0]), len(map)))
+
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -89,7 +136,7 @@ while True:
                     down = True
         
         #Move Player
-        PacMan.move(up, left, down, right)
+        PacMan.move(up, left, down, right, walls)
 
         #Eat Pellets
         newPellets = []
@@ -105,8 +152,10 @@ while True:
         screen.fill("black")
         for p in pellets:
             pygame.draw.circle(screen, "white", p, 2)
-        #PacMan.draw()
+        PacMan.draw()
+        for w in walls:
+            pygame.draw.rect(screen, "blue", w)
         pygame.display.update()
 
         #Tick
-        clock.tick(60)
+        clock.tick(10)
