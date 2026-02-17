@@ -70,10 +70,15 @@ while True:
         PacMan.move(up, left, down, right, walls)
 
         #Eat Pellets
-        pellets = PacMan.eat(tileSize, pellets)
+        pellets = PacMan.eat(pellets)
 
         #Warp
         pellets = PacMan.warp(tileSize, warps, pellets)
+
+        #Check If Win
+        if len(pellets) == 0:
+            print("You Win")
+            terminate()
 
         #Draw Screen
         screen.fill("black")

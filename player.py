@@ -44,10 +44,10 @@ class Player:
         
         self.position = position
     
-    def eat(self, tileSize, pellets):
+    def eat(self, pellets):
         newPellets = []
         for p in pellets:
-            if pygame.Rect(p[0], p[1], tileSize, tileSize).colliderect(pygame.Rect(self.position[0]-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
+            if pygame.Rect(p[0], p[1], 2, 2).colliderect(pygame.Rect(self.position[0]-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
                 self.score+=1
                 continue
             newPellets.append(p)
@@ -66,5 +66,5 @@ class Player:
                     self.position = (self.position[0] - tileSize, self.position[1])
                 
                 #Eat Warped On Pellet
-                return self.eat(tileSize, pellets)
+                return self.eat(pellets)
         return pellets

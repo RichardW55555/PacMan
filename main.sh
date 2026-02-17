@@ -1,0 +1,1 @@
+python3 ~/PacMan/main.py
