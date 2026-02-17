@@ -2,9 +2,8 @@
 
 ## ToDo
 - Edit README
-- Fix eating bug
 - Add ghost house
 - Add ghosts
 - Add reset button
-- Add win/lose
+- Add lose
 - Might be more
