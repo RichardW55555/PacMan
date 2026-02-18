@@ -1,6 +1,8 @@
 import sys
+import os
 import pygame
 from player import *
+from enemy import *
 from constants import *
 from maze import *
 from pygame.locals import *
@@ -25,7 +27,7 @@ def playLevel(x, y):
     
         up, down, left, right = False, False, False, False
 
-        walls, pellets, warps = loadLevel(allMazes[mazeIndex])
+        walls, ghostDoors, ghostStarts, pellets, warps = loadLevel(allMazes[mazeIndex])
 
         PacMan = Player(x, y)
         while True:
@@ -42,25 +44,29 @@ def playLevel(x, y):
                             hardReset = True
                     #Change the keyboard variables.
                     if event.key == K_LEFT or event.key == K_a:
-                        left = True
-                        right = False
-                        up = False
-                        down = False
+                        if PacMan.canMove(False, True, False, False, walls):
+                            left = True
+                            right = False
+                            up = False
+                            down = False
                     if event.key == K_RIGHT or event.key == K_d:
-                        left = False
-                        right = True
-                        up = False
-                        down = False
+                        if PacMan.canMove(False, False, False, True, walls):
+                            left = False
+                            right = True
+                            up = False
+                            down = False
                     if event.key == K_UP or event.key == K_w:
-                        left = False
-                        right = False
-                        up = True
-                        down = False
+                        if PacMan.canMove(True, False, False, False, walls):
+                            left = False
+                            right = False
+                            up = True
+                            down = False
                     if event.key == K_DOWN or event.key == K_s:
-                        left = False
-                        right = False
-                        up = False
-                        down = True
+                        if PacMan.canMove(False, False, True, False, walls):
+                            left = False
+                            right = False
+                            up = False
+                            down = True
             
             #Check If Reset
             if reset == True:

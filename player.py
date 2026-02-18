@@ -1,16 +1,13 @@
 import pygame
+import os
+from character import *
 from constants import *
 
-class Player:
+class Player(Character):
     def __init__(self, startCol, startRow):
-        self.position = (
-        startCol * tileSize + tileSize // 2, 
-        startRow * tileSize + tileSize // 2
-    )
-        self.size = 10
+        super().__init__(startCol, startRow)
         self.score = 0
-        self.speed = tileSize
-        raw_img = pygame.image.load("PacMan.png")
+        raw_img = pygame.image.load(os.path.join("Assets", "PacMan.png"))
         self.pacman_img = raw_img.convert_alpha()
         self.pacman_img = pygame.transform.scale(self.pacman_img, (self.size*2, self.size*2))
         self.direction = {
@@ -25,41 +22,28 @@ class Player:
         top_left = (self.position[0] - self.size, self.position[1] - self.size)
         screen.blit(self.current_img, top_left)
     
-    def move(self, up, left, down, right, walls):
-        position = self.position
+    def move(self, up, left, down, right, walls, ghostDoors):
+        if not self.canMove(up, left, down, right, walls, ghostDoors, True):
+            return
         
+        position = self.position
         if up:
             new_y = position[1] - self.speed
-            for w in walls:
-                if w.colliderect(pygame.Rect(self.position[0]-self.size, new_y-self.size, self.size*2, self.size*2)):
-                    return False
             position = (position[0], new_y)
             self.current_img = self.direction["up"]
         elif left:
             new_x = position[0] - self.speed
-            for w in walls:
-                if w.colliderect(pygame.Rect(new_x-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
-                    return False
             position = (new_x, position[1])
             self.current_img = self.direction["left"]
         elif down:
             new_y = position[1] + self.speed
-            for w in walls:
-                if w.colliderect(pygame.Rect(self.position[0]-self.size, new_y-self.size, self.size*2, self.size*2)):
-                    return False
             position = (position[0], new_y)
             self.current_img = self.direction["down"]
         elif right:
             new_x = position[0] + self.speed
-            for w in walls:
-                if w.colliderect(pygame.Rect(new_x-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
-                    return False
             position = (new_x, position[1])
             self.current_img = self.direction["right"]
-        
         self.position = position
-
-        return True
     
     def eat(self, pellets):
         newPellets = []
@@ -77,10 +61,12 @@ class Player:
             if pygame.Rect(w[0]-tileSize//2, w[1]-tileSize//2, tileSize, tileSize).colliderect(pygame.Rect(self.position[0]-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
                 self.position = warps[warps.index(w)-1]
 
+                '''
                 if self.position[0] < width // 2:
                     self.position = (self.position[0] + tileSize, self.position[1])
                 else:
                     self.position = (self.position[0] - tileSize, self.position[1])
+                '''
                 
                 #Eat Warped On Pellet
                 return self.eat(pellets)
