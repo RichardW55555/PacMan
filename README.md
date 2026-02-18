@@ -4,6 +4,6 @@
 - Edit README
 - Add ghost house
 - Add ghosts
-- Add reset button
-- Add lose
+- Add win/lose
+- Add move(/warp) sound(s)
 - Might be more
