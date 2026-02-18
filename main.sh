@@ -1,1 +1,2 @@
-python3 ~/PacMan/main.py
+cd ~/PacMan
+python3 main.py
