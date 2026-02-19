@@ -9,10 +9,14 @@ from pygame.locals import *
 
 pygame.init()
 screen = pygame.display.set_mode((width, height))
+game_font = pygame.font.Font(None, 48)
 pygame.display.set_caption("Score: %s" % (0))
 clock = pygame.time.Clock()
 
 hardReset, reset = False, False
+
+win_image = game_font.render("YOU WIN!", True, "green")
+lose_image = game_font.render("YOU LOSE", True, "red")
 
 def terminate():
     pygame.quit()
@@ -81,8 +85,22 @@ def playLevel(x, y):
             #Check Ghost Collisions
             if PacMan.die(x, y, ghosts, ghostStarts) == True:
                 if PacMan.lives == 0:
-                    print("You Lose")
-                    terminate()
+                    screen.fill("black")
+                    screen.blit(lose_image, (width // 2 - win_image.get_width() // 2, height // 2))
+                    pygame.display.update()
+                    waiting = True
+                    while waiting:
+                        for event in pygame.event.get():
+                            if event.type == QUIT:
+                                waiting = False
+                            if event.type == KEYDOWN:
+                                if event.key == K_ESCAPE:
+                                    waiting = False
+                                else:
+                                    hardReset = True
+                                    waiting = False
+                    if hardReset == False:
+                        terminate()
                 else:
                     PacMan.currentDirection = ""
                     PacMan.requestedDirection = ""
@@ -92,8 +110,22 @@ def playLevel(x, y):
                 if mazeIndex+1 in allMazes:
                     mazeIndex += 1
                 else:
-                    print("You Win")
-                    terminate()
+                    screen.fill("black")
+                    screen.blit(win_image, (width // 2 - win_image.get_width() // 2, height // 2))
+                    pygame.display.update()
+                    waiting = True
+                    while waiting:
+                        for event in pygame.event.get():
+                            if event.type == QUIT:
+                                waiting = False
+                            if event.type == KEYDOWN:
+                                if event.key == K_ESCAPE:
+                                    waiting = False
+                                else:
+                                    hardReset = True
+                                    waiting = False
+                    if hardReset == False:
+                        terminate()
                 break
 
             #Draw Screen
