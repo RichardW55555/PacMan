@@ -16,13 +16,12 @@ def loadLevel(maze):
             if char == "#":
                 walls.append(pygame.Rect(x, y, tileSize, tileSize))
             elif char == "-":
-                ghostDoors.append(pygame.Rect(x, y, tileSize, tileSize))
+                ghostDoors.append(pygame.Rect(x, y+tileSize//4, tileSize, 15))
             elif char == "_":
-                ghostStarts.append(pygame.Rect(x, y, tileSize, tileSize))
+                ghostStarts.append((x+tileSize//2, y+tileSize//2))
             elif char == ".":
                 pellets.append((x+tileSize//2, y+tileSize//2))
             elif char == "w":
-                pellets.append((x+tileSize//2, y+tileSize//2))
                 warps.append((x+tileSize//2, y+tileSize//2))
 
     return walls, ghostDoors, ghostStarts, pellets, warps
@@ -76,7 +75,7 @@ maze1 = [
     "######.##..........##.######",
     "######.##.###--###.##.######",
     "######.##.#      #.##.######",
-    "w.........# ---- #.........w",
+    "w.........# ____ #.........w",
     "######.##.#      #.##.######",
     "######.##.########.##.######",
     "######.##..........##.######",

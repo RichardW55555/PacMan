@@ -24,12 +24,21 @@ def playLevel(x, y):
     while True:
         global hardReset, reset
         global mazeIndex
-    
-        up, down, left, right = False, False, False, False
 
         walls, ghostDoors, ghostStarts, pellets, warps = loadLevel(allMazes[mazeIndex])
 
+        ghost_colors = ["Red", "Pink", "Cyan", "Orange"]
+        ghosts = []
+
+        for i, start_pos in enumerate(ghostStarts):
+            col = start_pos[0] // tileSize
+            row = start_pos[1] // tileSize
+
+            if i < len(ghost_colors):
+                color = ghost_colors[i]
+                ghosts.append(Enemy(col, row, color))
         PacMan = Player(x, y)
+
         while True:
             for event in pygame.event.get():
                 if event.type == QUIT:
@@ -44,42 +53,39 @@ def playLevel(x, y):
                             hardReset = True
                     #Change the keyboard variables.
                     if event.key == K_LEFT or event.key == K_a:
-                        if PacMan.canMove(False, True, False, False, walls):
-                            left = True
-                            right = False
-                            up = False
-                            down = False
+                        PacMan.requestedDirection = "left"
                     if event.key == K_RIGHT or event.key == K_d:
-                        if PacMan.canMove(False, False, False, True, walls):
-                            left = False
-                            right = True
-                            up = False
-                            down = False
+                        PacMan.requestedDirection = "right"
                     if event.key == K_UP or event.key == K_w:
-                        if PacMan.canMove(True, False, False, False, walls):
-                            left = False
-                            right = False
-                            up = True
-                            down = False
+                        PacMan.requestedDirection = "up"
                     if event.key == K_DOWN or event.key == K_s:
-                        if PacMan.canMove(False, False, True, False, walls):
-                            left = False
-                            right = False
-                            up = False
-                            down = True
+                        PacMan.requestedDirection = "down"
             
             #Check If Reset
             if reset == True:
                 break
 
-            #Move Player
-            PacMan.move(up, left, down, right, walls)
+            #Move
+            for ghost in ghosts:
+                ghost.move(walls, ghostDoors)
+            PacMan.move(walls, ghostDoors)
 
             #Eat Pellets
             pellets = PacMan.eat(pellets)
 
             #Warp
+            for ghost in ghosts:
+                ghost.warp(warps)
             pellets = PacMan.warp(warps, pellets)
+
+            #Check Ghost Collisions
+            if PacMan.die(x, y, ghosts, ghostStarts) == True:
+                if PacMan.lives == 0:
+                    print("You Lose")
+                    terminate()
+                else:
+                    PacMan.currentDirection = ""
+                    PacMan.requestedDirection = ""
 
             #Check If Win
             if len(pellets) == 0:
@@ -94,13 +100,17 @@ def playLevel(x, y):
             screen.fill("black")
             for p in pellets:
                 pygame.draw.circle(screen, "white", p, 2)
+            for ghost in ghosts:
+                ghost.draw(screen)
             PacMan.draw(screen)
             for w in walls:
                 pygame.draw.rect(screen, "blue", w)
+            for d in ghostDoors:
+                pygame.draw.rect(screen, "white", d)
             pygame.display.update()
 
             #Tick
-            clock.tick(10)
+            clock.tick(60)
         
         if hardReset == True:
             hardReset, reset = False, False

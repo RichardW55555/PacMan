@@ -8,46 +8,37 @@ class Character:
             startRow * tileSize + tileSize // 2
         )
         self.size = 10
-        self.speed = tileSize
-    
-    def canMove(self, up, left, down, right, walls, ghostDoors, isPlayer):
-        position = self.position
+        self.speed = 5
+        self.currentDirection = ""
         
-        if up:
-            new_y = position[1] - self.speed
-            for w in walls:
-                if w.colliderect(pygame.Rect(self.position[0]-self.size, new_y-self.size, self.size*2, self.size*2)):
-                    return False
-            if isPlayer:
-                for d in ghostDoors:
-                    if d.colliderect(pygame.Rect(self.position[0]-self.size, new_y-self.size, self.size*2, self.size*2)):
+    def canMove(self, direction, walls, ghostDoors, isPlayer):
+        position = self.position
+
+        obsticles = []
+        obsticles += walls
+        if isPlayer:
+            obsticles += ghostDoors
+        
+        match direction:
+            case "up":
+                new_y = position[1] - self.speed - 3
+                for o in obsticles:
+                    if o.colliderect(pygame.Rect(self.position[0]-self.size, new_y-self.size, self.size*2, self.size*2)):
                         return False
-        elif left:
-            new_x = position[0] - self.speed
-            for w in walls:
-                if w.colliderect(pygame.Rect(new_x-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
-                    return False
-            if isPlayer:
-                for d in ghostDoors:
-                    if d.colliderect(pygame.Rect(new_x-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
+            case "left":
+                new_x = position[0] - self.speed - 3
+                for o in obsticles:
+                    if o.colliderect(pygame.Rect(new_x-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
                         return False
-        elif down:
-            new_y = position[1] + self.speed
-            for w in walls:
-                if w.colliderect(pygame.Rect(self.position[0]-self.size, new_y-self.size, self.size*2, self.size*2)):
-                    return False
-            if isPlayer:
-                for d in ghostDoors:
-                    if d.colliderect(pygame.Rect(self.position[0]-self.size, new_y-self.size, self.size*2, self.size*2)):
+            case "down":
+                new_y = position[1] + self.speed + 3
+                for o in obsticles:
+                    if o.colliderect(pygame.Rect(self.position[0]-self.size, new_y-self.size, self.size*2, self.size*2)):
                         return False
-        elif right:
-            new_x = position[0] + self.speed
-            for w in walls:
-                if w.colliderect(pygame.Rect(new_x-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
-                    return False
-            if isPlayer:
-                for d in ghostDoors:
-                    if d.colliderect(pygame.Rect(new_x-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
+            case "right":
+                new_x = position[0] + self.speed + 3
+                for o in obsticles:
+                    if o.colliderect(pygame.Rect(new_x-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
                         return False
 
         return True
