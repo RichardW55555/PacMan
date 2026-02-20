@@ -5,9 +5,20 @@ from character import *
 from constants import *
 
 class Enemy(Character):
-    def __init__(self, startCol, startRow, color):
-        super().__init__(startCol, startRow)
-        raw_img = pygame.image.load(os.path.join("Assets", f"{color} Ghost.png"))
+    def __init__(self, startCol, startRow, name):
+        super().__init__(startCol, startRow, False)
+        self.movePriority = ["up", "left", "down", "right"]
+        self.name = name
+        self.color = ""
+        if name == "Blinky":
+            self.color = "Red"
+        elif name == "Pinky":
+            self.color = "Pink"
+        elif name == "Inky":
+            self.color = "Cyan"
+        elif name == "Clyde":
+            self.color = "Orange"
+        raw_img = pygame.image.load(os.path.join("Assets", f"{self.color} Ghost.png"))
         self.ghost_img = raw_img.convert_alpha()
         self.ghost_img = pygame.transform.scale(self.ghost_img, (self.size*2, self.size*2))
     
@@ -15,20 +26,54 @@ class Enemy(Character):
         top_left = (self.position[0] - self.size, self.position[1] - self.size)
         screen.blit(self.ghost_img, top_left)
     
-    def move(self, walls, ghostDoors):
+    def move(self, walls, ghostDoors, target):
         position = self.position
 
-        if ((self.position[0] - 15) % 30 == 0 and (self.position[1] - 15) % 30 == 0):
-            directions = ["up", "left", "down", "right"]
-            opposite = opposites.get(self.currentDirection)
-            if opposite in directions:
-                directions.remove(opposite)
-            newDirections = []
-            for direction in directions:
-                if self.canMove(direction, walls, ghostDoors, False):
-                    newDirections.append(direction)
-            directions = newDirections
-            self.currentDirection = random.choice(directions)
+        if self.name == "Blinky": #Chase
+            if self.checkCenter():
+                directions = {
+                    "up": 0,
+                    "left": 0,
+                    "down": 0,
+                    "right": 0
+                }
+                opposite = opposites.get(self.currentDirection)
+                if opposite in directions:
+                    directions.pop(opposite)
+                newDirections = dict()
+                for direction, _ in directions.items():
+                    movePossible, distance = self.canMove(direction, walls, ghostDoors, False, target, tileSize)
+                    if movePossible:
+                        newDirections[direction] = distance
+                directions = newDirections
+                minDistance = min(directions.values())
+                minDistances = [k for k, v in directions.items() if v == minDistance]
+                if minDistances:
+                    for p in self.movePriority:
+                        if p in minDistances:
+                            self.currentDirection = p
+                            break
+                else:
+                    self.currentDirection = opposites.get(self.currentDirection)
+        elif self.name == "Pinky": #Intercept
+            pass
+        elif self.name == "Inky": #Unpredictable
+            pass
+        elif self.name == "Clyde": #Random
+            if self.checkCenter():
+                directions = ["up", "left", "down", "right"]
+                opposite = opposites.get(self.currentDirection)
+                if opposite in directions:
+                    directions.remove(opposite)
+                newDirections = []
+                for direction in directions:
+                    movePossible, _ = self.canMove(direction, walls, ghostDoors, False)
+                    if movePossible:
+                        newDirections.append(direction)
+                directions = newDirections
+                self.currentDirection = random.choice(directions)
+        
+        
         
         match self.currentDirection:
             case "up":

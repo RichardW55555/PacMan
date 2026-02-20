@@ -13,7 +13,7 @@ game_font = pygame.font.Font(None, 48)
 pygame.display.set_caption("Score: %s" % (0))
 clock = pygame.time.Clock()
 
-hardReset, reset = False, False
+reset, hardReset = False, False
 
 win_image = game_font.render("YOU WIN!", True, "green")
 lose_image = game_font.render("YOU LOSE", True, "red")
@@ -26,21 +26,14 @@ mazeIndex = 1
 
 def playLevel(x, y):
     while True:
-        global hardReset, reset
+        global reset, hardReset
         global mazeIndex
 
         walls, ghostDoors, ghostStarts, pellets, warps = loadLevel(allMazes[mazeIndex])
 
-        ghost_colors = ["Red", "Pink", "Cyan", "Orange"]
         ghosts = []
-
-        for i, start_pos in enumerate(ghostStarts):
-            col = start_pos[0] // tileSize
-            row = start_pos[1] // tileSize
-
-            if i < len(ghost_colors):
-                color = ghost_colors[i]
-                ghosts.append(Enemy(col, row, color))
+        for name, pos in ghostStarts.items():
+            ghosts.append(Enemy(pos[0], pos[1], name))
         PacMan = Player(x, y)
 
         while True:
@@ -71,7 +64,7 @@ def playLevel(x, y):
 
             #Move
             for ghost in ghosts:
-                ghost.move(walls, ghostDoors)
+                ghost.move(walls, ghostDoors, PacMan)
             PacMan.move(walls, ghostDoors)
 
             #Eat Pellets
@@ -97,7 +90,7 @@ def playLevel(x, y):
                                 if event.key == K_ESCAPE:
                                     waiting = False
                                 else:
-                                    hardReset = True
+                                    reset, hardReset = True, True
                                     waiting = False
                     if hardReset == False:
                         terminate()

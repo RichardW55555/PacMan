@@ -5,7 +5,7 @@ from pygame.locals import *
 def loadLevel(maze):
     walls = []
     ghostDoors = []
-    ghostStarts = []
+    ghostStarts = dict()
     pellets = []
     warps = []
     for rowI, row in enumerate(maze):
@@ -16,9 +16,15 @@ def loadLevel(maze):
             if char == "#":
                 walls.append(pygame.Rect(x, y, tileSize, tileSize))
             elif char == "-":
-                ghostDoors.append(pygame.Rect(x, y+tileSize//4, tileSize, 15))
-            elif char == "_":
-                ghostStarts.append((x+tileSize//2, y+tileSize//2))
+                ghostDoors.append(pygame.Rect(x, y+tileSize//2, tileSize, 15))
+            elif char == "B":
+                ghostStarts["Blinky"] = ((x+tileSize//2, y+tileSize//2))
+            elif char == "P":
+                ghostStarts["Pinky"] = ((x+tileSize//2, y+tileSize//2))
+            elif char == "I":
+                ghostStarts["Inky"] = ((x+tileSize//2, y+tileSize//2))
+            elif char == "C":
+                ghostStarts["Clyde"] = ((x+tileSize//2, y+tileSize//2))
             elif char == ".":
                 pellets.append((x+tileSize//2, y+tileSize//2))
             elif char == "w":
@@ -75,7 +81,7 @@ maze1 = [
     "######.##..........##.######",
     "######.##.###--###.##.######",
     "######.##.#      #.##.######",
-    "w.........# ____ #.........w",
+    "w.........# BPIC #.........w",
     "######.##.#      #.##.######",
     "######.##.########.##.######",
     "######.##..........##.######",

@@ -5,7 +5,7 @@ from constants import *
 
 class Player(Character):
     def __init__(self, startCol, startRow):
-        super().__init__(startCol, startRow)
+        super().__init__(startCol, startRow, True)
         self.requestedDirection = ""
         self.lives = 3
         self.score = 0
@@ -27,12 +27,14 @@ class Player(Character):
     def move(self, walls, ghostDoors):
         position = self.position
         if self.requestedDirection != "":
-            if ((self.position[0] - 15) % 30 == 0 and (self.position[1] - 15) % 30 == 0) or self.requestedDirection == opposites.get(self.currentDirection):
-                if self.canMove(self.requestedDirection, walls, ghostDoors, True):
+            if self.checkCenter() or self.requestedDirection == opposites.get(self.currentDirection):
+                movePossible, _ = self.canMove(self.requestedDirection, walls, ghostDoors, True)
+                if movePossible:
                     self.currentDirection = self.requestedDirection
                     self.requestedDirection = ""
         
-        if not self.canMove(self.currentDirection, walls, ghostDoors, True):
+        movePossible, _ = self.canMove(self.currentDirection, walls, ghostDoors, True)
+        if not movePossible:
             return
         
         match self.currentDirection:
@@ -88,6 +90,6 @@ class Player(Character):
                     y * tileSize + tileSize // 2
                 )
                 for i, ghost in enumerate(ghosts):
-                    ghost.position = ghostStarts[i]
+                    ghost.position = ghostStarts[ghost.name]
                 return True
         return False
