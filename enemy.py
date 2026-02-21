@@ -46,19 +46,33 @@ class Enemy(Character):
                     if movePossible:
                         newDirections[direction] = distance
                 directions = newDirections
-                minDistance = min(directions.values())
-                minDistances = [k for k, v in directions.items() if v == minDistance]
-                if minDistances:
-                    for p in self.movePriority:
-                        if p in minDistances:
-                            self.currentDirection = p
-                            break
+                if len(directions) != 0:
+                    minDistance = min(directions.values())
+                    minDistances = [k for k, v in directions.items() if v == minDistance]
+                    if len(minDistances) != 0:
+                        for p in self.movePriority:
+                            if p in minDistances:
+                                self.currentDirection = p
+                                break
+                    else:
+                        self.currentDirection = opposites.get(self.currentDirection)
                 else:
                     self.currentDirection = opposites.get(self.currentDirection)
         elif self.name == "Pinky": #Intercept
             pass
         elif self.name == "Inky": #Unpredictable
-            pass
+            if self.checkCenter():
+                directions = ["up", "left", "down", "right"]
+                opposite = opposites.get(self.currentDirection)
+                if opposite in directions:
+                    directions.remove(opposite)
+                newDirections = []
+                for direction in directions:
+                    movePossible, _ = self.canMove(direction, walls, ghostDoors, False)
+                    if movePossible:
+                        newDirections.append(direction)
+                directions = newDirections
+                self.currentDirection = random.choice(directions)
         elif self.name == "Clyde": #Random
             if self.checkCenter():
                 directions = ["up", "left", "down", "right"]
