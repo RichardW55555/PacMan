@@ -4,8 +4,8 @@ from character import *
 from constants import *
 
 class Player(Character):
-    def __init__(self, startCol, startRow):
-        super().__init__(startCol, startRow, True)
+    def __init__(self, screen, startCol, startRow):
+        super().__init__(screen, startCol, startRow, True)
         self.requestedDirection = ""
         self.lives = 3
         self.score = 0
@@ -16,24 +16,21 @@ class Player(Character):
             "up": pygame.transform.rotate(self.pacman_img, 270),
             "down": pygame.transform.rotate(self.pacman_img, 90),
             "left": pygame.transform.rotate(self.pacman_img, 0),
-            "right": pygame.transform.rotate(self.pacman_img, 180)
+            "right": pygame.transform.rotate(self.pacman_img, 180),
+            "": pygame.transform.rotate(self.pacman_img, 180)
         }
         self.current_img = self.imgDirection["right"]
-    
-    def draw(self, screen):
-        top_left = (self.position[0] - self.size, self.position[1] - self.size)
-        screen.blit(self.current_img, top_left)
     
     def move(self, walls, ghostDoors):
         position = self.position
         if self.requestedDirection != "":
             if self.checkCenter() or self.requestedDirection == opposites.get(self.currentDirection):
-                movePossible, _ = self.canMove(self.requestedDirection, walls, ghostDoors, True)
+                movePossible, _ = self.canMove(self.requestedDirection, walls, ghostDoors)
                 if movePossible:
                     self.currentDirection = self.requestedDirection
                     self.requestedDirection = ""
         
-        movePossible, _ = self.canMove(self.currentDirection, walls, ghostDoors, True)
+        movePossible, _ = self.canMove(self.currentDirection, walls, ghostDoors)
         if not movePossible:
             return
         
@@ -89,7 +86,8 @@ class Player(Character):
                     x * tileSize + tileSize // 2, 
                     y * tileSize + tileSize // 2
                 )
-                for i, ghost in enumerate(ghosts):
+                self.current_img = self.imgDirection["right"]
+                for _, ghost in enumerate(ghosts):
                     ghost.position = ghostStarts[ghost.name]
                 return True
         return False

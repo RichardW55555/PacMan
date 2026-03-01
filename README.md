@@ -2,7 +2,6 @@
 
 ## ToDo
 - Edit README
-- Fix Blinky
 - Add move(/warp) sound(s)
 - Add more levels
 - Add faster ghosts at later levels

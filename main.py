@@ -33,8 +33,8 @@ def playLevel(x, y):
 
         ghosts = []
         for name, pos in ghostStarts.items():
-            ghosts.append(Enemy(pos[0], pos[1], name))
-        PacMan = Player(x, y)
+            ghosts.append(Enemy(screen, pos[0], pos[1], name))
+        PacMan = Player(screen, x, y)
 
         while True:
             for event in pygame.event.get():
@@ -76,6 +76,7 @@ def playLevel(x, y):
             pellets = PacMan.warp(warps, pellets)
 
             #Check Ghost Collisions
+            '''
             if PacMan.die(x, y, ghosts, ghostStarts) == True:
                 if PacMan.lives == 0:
                     screen.fill("black")
@@ -97,6 +98,7 @@ def playLevel(x, y):
                 else:
                     PacMan.currentDirection = ""
                     PacMan.requestedDirection = ""
+            '''
 
             #Check If Win
             if len(pellets) == 0:
@@ -126,8 +128,8 @@ def playLevel(x, y):
             for p in pellets:
                 pygame.draw.circle(screen, "white", p, 2)
             for ghost in ghosts:
-                ghost.draw(screen)
-            PacMan.draw(screen)
+                ghost.draw()
+            PacMan.draw()
             for w in walls:
                 pygame.draw.rect(screen, "blue", w)
             for d in ghostDoors:
