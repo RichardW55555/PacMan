@@ -29,7 +29,7 @@ def playLevel(x, y):
         global reset, hardReset
         global mazeIndex
 
-        walls, ghostDoors, starts, pellets, warps = loadLevel(allMazes[mazeIndex])
+        walls, ghostDoors, starts, pellets, energizers, warps = loadLevel(allMazes[mazeIndex])
 
         ghosts = []
         for name, pos in starts.items():
@@ -70,7 +70,11 @@ def playLevel(x, y):
             PacMan.move(walls, ghostDoors)
 
             #Eat Pellets
-            pellets = PacMan.eat(pellets)
+            pellets, energizers, energizerEaten = PacMan.eat(pellets, energizers)
+            if energizerEaten:
+                for ghost in ghosts:
+                    # ghost.becomeVulnerable()
+                    pass
 
             #Warp
             for ghost in ghosts:
@@ -125,6 +129,8 @@ def playLevel(x, y):
 
             #Draw Screen
             screen.fill("black")
+            for e in energizers:
+                pygame.draw.circle(screen, "white", e, 8)
             for p in pellets:
                 pygame.draw.circle(screen, "white", p, 2)
             for ghost in ghosts:

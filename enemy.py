@@ -143,21 +143,11 @@ class Enemy(Character):
                     targetx = pivotx + vx
                     targety = pivoty + vy
                     self.pathfindToTarget(walls, ghostDoors, opposite, targetx, targety)
-            case "Clyde": #Random
+            case "Clyde": #Shy
                 if self.checkCenter():
-                    directions = ["up", "left", "down", "right"]
-                    if opposite in directions:
-                        directions.remove(opposite)
-                    newDirections = []
-                    for direction in directions:
-                        movePossible, _ = self.canMove(direction, walls, ghostDoors)
-                        if movePossible:
-                            newDirections.append(direction)
-                    directions = newDirections
-                    if len(directions) != 0:
-                        self.currentDirection = random.choice(directions)
-                    else:
-                        self.currentDirection = opposite
+                    if self.findDistance(self.position[0], self.position[1], targetx, targety) <= 8*tileSize:
+                        targetx, targety = 0, height
+                    self.pathfindToTarget(walls, ghostDoors, opposite, targetx, targety)
         
         match self.currentDirection:
             case "up":

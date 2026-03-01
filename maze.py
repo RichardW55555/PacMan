@@ -7,32 +7,36 @@ def loadLevel(maze):
     ghostDoors = []
     starts = dict()
     pellets = []
+    energizers = []
     warps = []
     for rowI, row in enumerate(maze):
         for colI, char in enumerate(row):
             x = colI*tileSize
             y = rowI*tileSize
 
-            if char == "#":
-                walls.append(pygame.Rect(x, y, tileSize, tileSize))
-            elif char == "-":
-                ghostDoors.append(pygame.Rect(x, y+tileSize//2, tileSize, 15))
-            elif char == "B":
-                starts["Blinky"] = ((x+tileSize//2, y+tileSize//2))
-            elif char == "P":
-                starts["Pinky"] = ((x+tileSize//2, y+tileSize//2))
-            elif char == "I":
-                starts["Inky"] = ((x+tileSize//2, y+tileSize//2))
-            elif char == "C":
-                starts["Clyde"] = ((x+tileSize//2, y+tileSize//2))
-            elif char == "S":
-                starts["PacMan"] = ((x+tileSize//2, y+tileSize//2))
-            elif char == ".":
-                pellets.append((x+tileSize//2, y+tileSize//2))
-            elif char == "w":
-                warps.append((x+tileSize//2, y+tileSize//2))
+            match char:
+                case "#":
+                    walls.append(pygame.Rect(x, y, tileSize, tileSize))
+                case "-":
+                    ghostDoors.append(pygame.Rect(x, y+tileSize//2, tileSize, 15))
+                case "B":
+                    starts["Blinky"] = ((x+tileSize//2, y+tileSize//2))
+                case "P":
+                    starts["Pinky"] = ((x+tileSize//2, y+tileSize//2))
+                case "I":
+                    starts["Inky"] = ((x+tileSize//2, y+tileSize//2))
+                case "C":
+                    starts["Clyde"] = ((x+tileSize//2, y+tileSize//2))
+                case "S":
+                    starts["PacMan"] = ((x+tileSize//2, y+tileSize//2))
+                case ".":
+                    pellets.append((x+tileSize//2, y+tileSize//2))
+                case "o":
+                    energizers.append((x+tileSize//2, y+tileSize//2))
+                case "w":
+                    warps.append((x+tileSize//2, y+tileSize//2))
 
-    return walls, ghostDoors, starts, pellets, warps
+    return walls, ghostDoors, starts, pellets, energizers, warps
 
 mazeOutline = [
     "############################",
@@ -72,7 +76,7 @@ maze1 = [
     "############################",
     "#............##............#",
     "#.####.#####.##.#####.####.#",
-    "#.####.#####.##.#####.####.#",
+    "#o####.#####.##.#####.####o#",
     "#.####.#####.##.#####.####.#",
     "#..........................#",
     "#.####.##.########.##.####.#",
@@ -92,7 +96,7 @@ maze1 = [
     "#............##............#",
     "#.####.#####.##.#####.####.#",
     "#.####.#####.##.#####.####.#",
-    "#...##.......S........##...#",
+    "#o..##.......S........##..o#",
     "###.##.##.########.##.##.###",
     "###.##.##.########.##.##.###",
     "#......##....##....##......#",
@@ -100,7 +104,7 @@ maze1 = [
     "#.##########.##.##########.#",
     "#..........................#",
     "############################",
-    ]
+]
 
 allMazes = {
     1: maze1

@@ -54,17 +54,28 @@ class Player(Character):
                 self.current_img = self.imgDirection["right"]
         self.position = position
     
-    def eat(self, pellets):
+    def eat(self, pellets, energizers):
         newPellets = []
+        newEnergizers = []
+        energizerEaten = False
         for p in pellets:
             if pygame.Rect(p[0], p[1], 2, 2).colliderect(pygame.Rect(self.position[0]-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
-                self.score+=1
+                self.score+=10
                 self.dotsEaten += 1
+                # Vunerable ghosts
                 continue
             newPellets.append(p)
         pellets = newPellets
+        for e in energizers:
+            if pygame.Rect(e[0], e[1], 2, 2).colliderect(pygame.Rect(self.position[0]-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
+                self.score+=50
+                self.dotsEaten+=1
+                energizerEaten = True
+                continue
+            newEnergizers.append(e)
+        energizers = newEnergizers
         pygame.display.set_caption("Score: %s" % (self.score))
-        return pellets
+        return pellets, energizers, energizerEaten
     
     def warp(self, warps, pellets):
         for w in warps:
