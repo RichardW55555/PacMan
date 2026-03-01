@@ -29,12 +29,14 @@ def playLevel(x, y):
         global reset, hardReset
         global mazeIndex
 
-        walls, ghostDoors, ghostStarts, pellets, warps = loadLevel(allMazes[mazeIndex])
+        walls, ghostDoors, starts, pellets, warps = loadLevel(allMazes[mazeIndex])
 
         ghosts = []
-        for name, pos in ghostStarts.items():
-            ghosts.append(Enemy(screen, pos[0], pos[1], name))
-        PacMan = Player(screen, x, y)
+        for name, pos in starts.items():
+            if name == "PacMan":
+                PacMan = Player(pos[0], pos[1])
+            else:
+                ghosts.append(Enemy(pos[0], pos[1], name))
 
         while True:
             for event in pygame.event.get():
@@ -64,7 +66,7 @@ def playLevel(x, y):
 
             #Move
             for ghost in ghosts:
-                ghost.move(walls, ghostDoors, PacMan)
+                ghost.move(walls, ghosts, ghostDoors, PacMan)
             PacMan.move(walls, ghostDoors)
 
             #Eat Pellets
@@ -76,8 +78,7 @@ def playLevel(x, y):
             pellets = PacMan.warp(warps, pellets)
 
             #Check Ghost Collisions
-            '''
-            if PacMan.die(x, y, ghosts, ghostStarts) == True:
+            if PacMan.die(ghosts, starts) == True:
                 if PacMan.lives == 0:
                     screen.fill("black")
                     screen.blit(lose_image, (width // 2 - win_image.get_width() // 2, height // 2))
@@ -98,7 +99,6 @@ def playLevel(x, y):
                 else:
                     PacMan.currentDirection = ""
                     PacMan.requestedDirection = ""
-            '''
 
             #Check If Win
             if len(pellets) == 0:
@@ -128,8 +128,8 @@ def playLevel(x, y):
             for p in pellets:
                 pygame.draw.circle(screen, "white", p, 2)
             for ghost in ghosts:
-                ghost.draw()
-            PacMan.draw()
+                ghost.draw(screen)
+            PacMan.draw(screen)
             for w in walls:
                 pygame.draw.rect(screen, "blue", w)
             for d in ghostDoors:

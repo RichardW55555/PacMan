@@ -4,11 +4,12 @@ from character import *
 from constants import *
 
 class Player(Character):
-    def __init__(self, screen, startCol, startRow):
-        super().__init__(screen, startCol, startRow, True)
+    def __init__(self, startCol, startRow):
+        super().__init__(startCol, startRow)
         self.requestedDirection = ""
         self.lives = 3
         self.score = 0
+        self.dotsEaten = 0
         raw_img = pygame.image.load(os.path.join("Assets", "PacMan.png"))
         self.pacman_img = raw_img.convert_alpha()
         self.pacman_img = pygame.transform.scale(self.pacman_img, (self.size*2, self.size*2))
@@ -19,7 +20,7 @@ class Player(Character):
             "right": pygame.transform.rotate(self.pacman_img, 180),
             "": pygame.transform.rotate(self.pacman_img, 180)
         }
-        self.current_img = self.imgDirection["right"]
+        self.current_img = self.imgDirection[""]
     
     def move(self, walls, ghostDoors):
         position = self.position
@@ -58,6 +59,7 @@ class Player(Character):
         for p in pellets:
             if pygame.Rect(p[0], p[1], 2, 2).colliderect(pygame.Rect(self.position[0]-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
                 self.score+=1
+                self.dotsEaten += 1
                 continue
             newPellets.append(p)
         pellets = newPellets
@@ -78,16 +80,16 @@ class Player(Character):
                 return self.eat(pellets)
         return pellets
     
-    def die(self, x, y, ghosts, ghostStarts):
+    def die(self, ghosts, starts):
         for ghost in ghosts:
-            if pygame.Rect(ghost.position[0]-ghost.size//2, ghost.position[1]-ghost.size//2, tileSize, tileSize).colliderect(pygame.Rect(self.position[0]-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
+            if pygame.Rect(ghost.position[0]-ghost.size, ghost.position[1]-ghost.size, ghost.size*2, ghost.size*2).colliderect(pygame.Rect(self.position[0]-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
                 self.lives -= 1
-                self.position = (
-                    x * tileSize + tileSize // 2, 
-                    y * tileSize + tileSize // 2
-                )
+                self.dotsEaten = 0
+                self.position = starts["PacMan"]
                 self.current_img = self.imgDirection["right"]
                 for _, ghost in enumerate(ghosts):
-                    ghost.position = ghostStarts[ghost.name]
+                    ghost.releaseTimer = 0
+                    ghost.position = starts[ghost.name]
+                    ghost.current_img = ghost.imgDirection[""]
                 return True
         return False

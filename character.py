@@ -2,17 +2,11 @@ import pygame
 from constants import *
 
 class Character:
-    def __init__(self, screen, startCol, startRow, isPlayer):
-        self.screen = screen
+    def __init__(self, startCol, startRow):
         self.position = (
-            startCol * tileSize + tileSize // 2, 
-            startRow * tileSize + tileSize // 2
+            startCol,
+            startRow
         )
-        if not isPlayer:
-            self.position = (
-                startCol,
-                startRow
-            )
         self.size = 10
         self.speed = 5
         self.currentDirection = ""
@@ -23,6 +17,7 @@ class Character:
             "right": None,
             "": None
         }
+        self.current_img = self.imgDirection[""]
     
     def checkCenter(self):
         return ((self.position[0] - 15) % 30 == 0 and (self.position[1] - 15) % 30 == 0)
@@ -73,8 +68,6 @@ class Character:
 
         return True, distance
     
-    def draw(self, direction=None):
-        if direction == None:
-            direction = self.currentDirection
+    def draw(self, screen):
         top_left = (self.position[0] - self.size, self.position[1] - self.size)
-        self.screen.blit(self.imgDirection[direction], top_left)
+        screen.blit(self.current_img, top_left)

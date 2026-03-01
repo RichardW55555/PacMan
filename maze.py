@@ -5,7 +5,7 @@ from pygame.locals import *
 def loadLevel(maze):
     walls = []
     ghostDoors = []
-    ghostStarts = dict()
+    starts = dict()
     pellets = []
     warps = []
     for rowI, row in enumerate(maze):
@@ -18,19 +18,21 @@ def loadLevel(maze):
             elif char == "-":
                 ghostDoors.append(pygame.Rect(x, y+tileSize//2, tileSize, 15))
             elif char == "B":
-                ghostStarts["Blinky"] = ((x+tileSize//2, y+tileSize//2))
+                starts["Blinky"] = ((x+tileSize//2, y+tileSize//2))
             elif char == "P":
-                ghostStarts["Pinky"] = ((x+tileSize//2, y+tileSize//2))
+                starts["Pinky"] = ((x+tileSize//2, y+tileSize//2))
             elif char == "I":
-                ghostStarts["Inky"] = ((x+tileSize//2, y+tileSize//2))
+                starts["Inky"] = ((x+tileSize//2, y+tileSize//2))
             elif char == "C":
-                ghostStarts["Clyde"] = ((x+tileSize//2, y+tileSize//2))
+                starts["Clyde"] = ((x+tileSize//2, y+tileSize//2))
+            elif char == "S":
+                starts["PacMan"] = ((x+tileSize//2, y+tileSize//2))
             elif char == ".":
                 pellets.append((x+tileSize//2, y+tileSize//2))
             elif char == "w":
                 warps.append((x+tileSize//2, y+tileSize//2))
 
-    return walls, ghostDoors, ghostStarts, pellets, warps
+    return walls, ghostDoors, starts, pellets, warps
 
 mazeOutline = [
     "############################",
@@ -81,7 +83,7 @@ maze1 = [
     "######.##....B.....##.######",
     "######.##.###--###.##.######",
     "######.##.#      #.##.######",
-    "w.........# IPC  #.........w",
+    "w.........# PIC  #.........w",
     "######.##.#      #.##.######",
     "######.##.########.##.######",
     "######.##..........##.######",
@@ -90,7 +92,7 @@ maze1 = [
     "#............##............#",
     "#.####.#####.##.#####.####.#",
     "#.####.#####.##.#####.####.#",
-    "#...##................##...#",
+    "#...##.......S........##...#",
     "###.##.##.########.##.##.###",
     "###.##.##.########.##.##.###",
     "#......##....##....##......#",
