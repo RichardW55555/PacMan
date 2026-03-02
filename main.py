@@ -18,13 +18,18 @@ reset, hardReset = False, False
 win_image = game_font.render("YOU WIN!", True, "green")
 lose_image = game_font.render("YOU LOSE", True, "red")
 
+sounds = {
+    "waka": pygame.mixer.Sound(os.path.join("Assets", "Sounds", "Waka.mp3")),
+    "death": pygame.mixer.Sound(os.path.join("Assets", "Sounds", "Death.mp3")),
+}
+
 def terminate():
     pygame.quit()
     sys.exit()
 
 mazeIndex = 1
 
-def playLevel(x, y):
+def playLevel():
     while True:
         global reset, hardReset
         global mazeIndex
@@ -34,9 +39,9 @@ def playLevel(x, y):
         ghosts = []
         for name, pos in starts.items():
             if name == "PacMan":
-                PacMan = Player(pos[0], pos[1])
+                PacMan = Player(pos[0], pos[1], sounds)
             else:
-                ghosts.append(Enemy(pos[0], pos[1], name))
+                ghosts.append(Enemy(pos[0], pos[1], name, sounds))
 
         while True:
             for event in pygame.event.get():
@@ -79,7 +84,7 @@ def playLevel(x, y):
             #Warp
             for ghost in ghosts:
                 ghost.warp(warps)
-            pellets = PacMan.warp(warps, pellets)
+            pellets, energizers, _ = PacMan.warp(warps, pellets, energizers)
 
             #Check Ghost Collisions
             if PacMan.die(ghosts, starts) == True:
@@ -154,7 +159,7 @@ def playLevel(x, y):
             break
 
 def main():
-    playLevel(13, 23)
+    playLevel()
 
 if __name__ == "__main__":
     while True:

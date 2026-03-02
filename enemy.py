@@ -5,8 +5,8 @@ from character import *
 from constants import *
 
 class Enemy(Character):
-    def __init__(self, startCol, startRow, name):
-        super().__init__(startCol, startRow)
+    def __init__(self, startCol, startRow, name, sounds):
+        super().__init__(startCol, startRow, sounds)
         self.movePriority = ["up", "left", "down", "right"]
         self.name = name
         self.releaseTimer = 0
@@ -22,7 +22,7 @@ class Enemy(Character):
             case "Clyde":
                 self.releaseThreshold = 720
                 self.dotRelease = 60
-        ghosts = pygame.image.load(os.path.join("Assets", "Ghosts.png")).convert_alpha()
+        ghosts = pygame.image.load(os.path.join("Assets", "Images", "Ghosts.png")).convert_alpha()
         ghostCoords = {
             "Blinky": {
                 "up": (19, 0),

@@ -4,13 +4,13 @@ from character import *
 from constants import *
 
 class Player(Character):
-    def __init__(self, startCol, startRow):
-        super().__init__(startCol, startRow)
+    def __init__(self, startCol, startRow, sounds):
+        super().__init__(startCol, startRow, sounds)
         self.requestedDirection = ""
         self.lives = 3
         self.score = 0
         self.dotsEaten = 0
-        raw_img = pygame.image.load(os.path.join("Assets", "PacMan.png"))
+        raw_img = pygame.image.load(os.path.join("Assets", "Images", "PacMan.png"))
         self.pacman_img = raw_img.convert_alpha()
         self.pacman_img = pygame.transform.scale(self.pacman_img, (self.size*2, self.size*2))
         self.imgDirection = {
@@ -52,6 +52,7 @@ class Player(Character):
                 new_x = position[0] + self.speed
                 position = (new_x, position[1])
                 self.current_img = self.imgDirection["right"]
+        
         self.position = position
     
     def eat(self, pellets, energizers):
@@ -62,7 +63,8 @@ class Player(Character):
             if pygame.Rect(p[0], p[1], 2, 2).colliderect(pygame.Rect(self.position[0]-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
                 self.score+=10
                 self.dotsEaten += 1
-                # Vunerable ghosts
+                if not self.sounds["waka"].get_num_channels():
+                    self.sounds["waka"].play()
                 continue
             newPellets.append(p)
         pellets = newPellets
@@ -70,14 +72,17 @@ class Player(Character):
             if pygame.Rect(e[0], e[1], 2, 2).colliderect(pygame.Rect(self.position[0]-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
                 self.score+=50
                 self.dotsEaten+=1
+                if not self.sounds["waka"].get_num_channels():
+                    self.sounds["waka"].play()
                 energizerEaten = True
+                # Vunerable ghosts
                 continue
             newEnergizers.append(e)
         energizers = newEnergizers
         pygame.display.set_caption("Score: %s" % (self.score))
         return pellets, energizers, energizerEaten
     
-    def warp(self, warps, pellets):
+    def warp(self, warps, pellets, energizers):
         for w in warps:
             if pygame.Rect(w[0]-tileSize//2, w[1]-tileSize//2, tileSize, tileSize).colliderect(pygame.Rect(self.position[0]-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
                 self.position = warps[warps.index(w)-1]
@@ -88,14 +93,18 @@ class Player(Character):
                     self.position = (self.position[0] - tileSize, self.position[1])
                 
                 #Eat Warped On Pellet
-                return self.eat(pellets)
-        return pellets
+                return self.eat(pellets, energizers)
+        return pellets, energizers, False
     
     def die(self, ghosts, starts):
         for ghost in ghosts:
             if pygame.Rect(ghost.position[0]-ghost.size, ghost.position[1]-ghost.size, ghost.size*2, ghost.size*2).colliderect(pygame.Rect(self.position[0]-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
                 self.lives -= 1
                 self.dotsEaten = 0
+                self.sounds["death"].play()
+                while True:
+                    if not self.sounds["death"].get_num_channels():
+                        break
                 self.position = starts["PacMan"]
                 self.current_img = self.imgDirection["right"]
                 for _, ghost in enumerate(ghosts):

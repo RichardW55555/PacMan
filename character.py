@@ -2,7 +2,7 @@ import pygame
 from constants import *
 
 class Character:
-    def __init__(self, startCol, startRow):
+    def __init__(self, startCol, startRow, sounds):
         self.position = (
             startCol,
             startRow
@@ -18,6 +18,7 @@ class Character:
             "": None
         }
         self.current_img = self.imgDirection[""]
+        self.sounds = sounds
     
     def checkCenter(self):
         return ((self.position[0] - 15) % 30 == 0 and (self.position[1] - 15) % 30 == 0)
