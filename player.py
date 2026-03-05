@@ -5,12 +5,13 @@ from constants import *
 
 class Player(Character):
     def __init__(self, startCol, startRow, sounds):
-        super().__init__(startCol, startRow, sounds)
+        super().__init__(startCol, startRow, 6, sounds)
         self.munch_sound_index = 0
         self.requestedDirection = ""
         self.lives = 3
         self.score = 0
         self.dotsEaten = 0
+        self.hasEatenDotTimer = 0
         raw_img = pygame.image.load(os.path.join("Assets", "Images", "PacMan.png"))
         self.pacman_img = raw_img.convert_alpha()
         self.pacman_img = pygame.transform.scale(self.pacman_img, (self.size*2, self.size*2))
@@ -24,6 +25,10 @@ class Player(Character):
         self.current_img = self.imgDirection[""]
     
     def move(self, walls, ghostDoors):
+        if self.hasEatenDotTimer > 0:
+            self.hasEatenDotTimer -= 1
+            return
+        
         position = self.position
         if self.requestedDirection != "":
             if self.checkCenter() or self.requestedDirection == opposites.get(self.currentDirection):
@@ -64,11 +69,14 @@ class Player(Character):
             if pygame.Rect(p[0], p[1], 2, 2).colliderect(pygame.Rect(self.position[0]-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
                 self.score+=10
                 self.dotsEaten += 1
-
+                
                 sound_name = f"eat_dot_{self.munch_sound_index}"
-                self.sounds[sound_name].play()
+                other_sound_name = f"eat_dot_{1 - self.munch_sound_index}"
+                if not self.sounds[other_sound_name].get_num_channels():
+                    self.sounds[sound_name].play()
 
-                self.munch_sound_index = 1 - self.munch_sound_index
+                    self.hasEatenDotTimer = 2
+                    self.munch_sound_index = 1 - self.munch_sound_index
 
                 continue
             newPellets.append(p)
@@ -79,9 +87,12 @@ class Player(Character):
                 self.dotsEaten+=1
 
                 sound_name = f"eat_dot_{self.munch_sound_index}"
-                self.sounds[sound_name].play()
+                other_sound_name = f"eat_dot_{1 - self.munch_sound_index}"
+                if not self.sounds[other_sound_name].get_num_channels():
+                    self.sounds[sound_name].play()
 
-                self.munch_sound_index = 1 - self.munch_sound_index
+                    self.hasEatenDotTimer = 2
+                    self.munch_sound_index = 1 - self.munch_sound_index
                 
                 energizerEaten = True
                 # Vunerable ghosts
@@ -110,9 +121,9 @@ class Player(Character):
             if pygame.Rect(ghost.position[0]-ghost.size, ghost.position[1]-ghost.size, ghost.size*2, ghost.size*2).colliderect(pygame.Rect(self.position[0]-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
                 self.lives -= 1
                 self.dotsEaten = 0
-                self.sounds["death"].play()
+                self.sounds["death_0"].play()
                 while True:
-                    if not self.sounds["death"].get_num_channels():
+                    if not self.sounds["death_0"].get_num_channels():
                         break
                 self.position = starts["PacMan"]
                 self.current_img = self.imgDirection["right"]

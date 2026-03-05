@@ -1,12 +1,11 @@
 import pygame
 import os
-import random
 from character import *
 from constants import *
 
 class Enemy(Character):
     def __init__(self, startCol, startRow, name, sounds):
-        super().__init__(startCol, startRow, sounds)
+        super().__init__(startCol, startRow, 5, sounds)
         self.movePriority = ["up", "left", "down", "right"]
         self.name = name
         self.releaseTimer = 0

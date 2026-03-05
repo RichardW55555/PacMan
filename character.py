@@ -2,13 +2,13 @@ import pygame
 from constants import *
 
 class Character:
-    def __init__(self, startCol, startRow, sounds):
+    def __init__(self, startCol, startRow, speed, sounds):
         self.position = (
             startCol,
             startRow
         )
         self.size = 10
-        self.speed = 5
+        self.speed = speed
         self.currentDirection = ""
         self.imgDirection = {
             "up": None,

@@ -18,7 +18,7 @@ def loadLevel(maze):
                 case "#":
                     walls.append(pygame.Rect(x, y, tileSize, tileSize))
                 case "-":
-                    ghostDoors.append(pygame.Rect(x, y+tileSize//2, tileSize, 15))
+                    ghostDoors.append(pygame.Rect(x, y+tileSize//2, tileSize, tileSize//2))
                 case "B":
                     starts["Blinky"] = ((x+tileSize//2, y+tileSize//2))
                 case "P":
