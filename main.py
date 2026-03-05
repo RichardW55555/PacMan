@@ -19,10 +19,15 @@ reset, hardReset = False, False
 win_image = game_font.render("YOU WIN!", True, "green")
 lose_image = game_font.render("YOU LOSE", True, "red")
 
-sounds = {
-    "waka": pygame.mixer.Sound(os.path.join("Assets", "Sounds", "Waka.wav")),
-    "death": pygame.mixer.Sound(os.path.join("Assets", "Sounds", "Death.wav")),
-}
+soundDir = os.path.join("Assets", "Sounds")
+sounds = dict()
+
+for filename in os.listdir(soundDir):
+    if filename.endswith(".wav"):
+        key = filename[:-4]
+        path = os.path.join(soundDir, filename)
+
+        sounds[key] = pygame.mixer.Sound(path)
 
 def terminate():
     pygame.quit()

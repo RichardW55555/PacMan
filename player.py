@@ -6,6 +6,7 @@ from constants import *
 class Player(Character):
     def __init__(self, startCol, startRow, sounds):
         super().__init__(startCol, startRow, sounds)
+        self.munch_sound_index = 0
         self.requestedDirection = ""
         self.lives = 3
         self.score = 0
@@ -63,8 +64,12 @@ class Player(Character):
             if pygame.Rect(p[0], p[1], 2, 2).colliderect(pygame.Rect(self.position[0]-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
                 self.score+=10
                 self.dotsEaten += 1
-                if not self.sounds["waka"].get_num_channels():
-                    self.sounds["waka"].play()
+
+                sound_name = f"eat_dot_{self.munch_sound_index}"
+                self.sounds[sound_name].play()
+
+                self.munch_sound_index = 1 - self.munch_sound_index
+
                 continue
             newPellets.append(p)
         pellets = newPellets
@@ -72,8 +77,12 @@ class Player(Character):
             if pygame.Rect(e[0], e[1], 2, 2).colliderect(pygame.Rect(self.position[0]-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
                 self.score+=50
                 self.dotsEaten+=1
-                if not self.sounds["waka"].get_num_channels():
-                    self.sounds["waka"].play()
+
+                sound_name = f"eat_dot_{self.munch_sound_index}"
+                self.sounds[sound_name].play()
+
+                self.munch_sound_index = 1 - self.munch_sound_index
+                
                 energizerEaten = True
                 # Vunerable ghosts
                 continue
