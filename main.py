@@ -7,6 +7,7 @@ from constants import *
 from maze import *
 from pygame.locals import *
 
+pygame.mixer.pre_init(44100, -16, 2, 512)
 pygame.init()
 screen = pygame.display.set_mode((width, height))
 game_font = pygame.font.Font(None, 48)
@@ -19,8 +20,8 @@ win_image = game_font.render("YOU WIN!", True, "green")
 lose_image = game_font.render("YOU LOSE", True, "red")
 
 sounds = {
-    "waka": pygame.mixer.Sound(os.path.join("Assets", "Sounds", "Waka.mp3")),
-    "death": pygame.mixer.Sound(os.path.join("Assets", "Sounds", "Death.mp3")),
+    "waka": pygame.mixer.Sound(os.path.join("Assets", "Sounds", "Waka.wav")),
+    "death": pygame.mixer.Sound(os.path.join("Assets", "Sounds", "Death.wav")),
 }
 
 def terminate():
