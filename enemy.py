@@ -1,5 +1,6 @@
 import pygame
 import os
+import random
 from character import *
 from constants import *
 
@@ -21,6 +22,7 @@ class Enemy(Character):
             case "Clyde":
                 self.releaseThreshold = 720
                 self.dotRelease = 60
+        self.scaredTimer = 0
         ghosts = pygame.image.load(os.path.join("Assets", "Images", "Ghosts.png")).convert_alpha()
         ghostCoords = {
             "Blinky": {
@@ -101,52 +103,63 @@ class Enemy(Character):
                 self.current_img = self.imgDirection["down"]
             return
         position = self.position
-        opposite = opposites.get(self.currentDirection)
-        targetx, targety = target.position
+        if self.checkCenter():
+            opposite = opposites.get(self.currentDirection)
+            if self.scaredTimer > 0:
+                self.scaredTimer -= 1
+                directions = ["up", "left", "down", "right"]
+                if opposite in directions:
+                    directions.pop(opposite)
+                newDirections = []
+                for direction in directions:
+                    movePossible, _ = self.canMove(direction, walls, ghostDoors)
+                    if movePossible:
+                        newDirections.append(direction)
+                directions = newDirections
+                if len(directions) != 0:
+                    self.currentDirection = random.choice(directions)
+            else:
+                targetx, targety = target.position
 
-        match self.name:
-            case "Blinky": #Chase
-                if self.checkCenter():
-                    self.pathfindToTarget(walls, ghostDoors, opposite, targetx, targety)
-            case "Pinky": #Intercept
-                if self.checkCenter():
-                    match target.currentDirection:
-                        case "up":
-                            targetx -= 4 * tileSize
-                            targety -= 4 * tileSize
-                        case "down":
-                            targety += 4 * tileSize
-                        case "left":
-                            targetx -= 4 * tileSize
-                        case "right":
-                            targetx += 4 * tileSize
-                    self.pathfindToTarget(walls, ghostDoors, opposite, targetx, targety)
-            case "Inky": #Unpredictable
-                if self.checkCenter():
-                    pivotx, pivoty = targetx, targety
-                    match target.currentDirection:
-                        case "up":
-                            pivotx -= 2 * tileSize
-                            pivoty -= 2 * tileSize
-                        case "down":
-                            pivoty += 2 * tileSize
-                        case "left":
-                            pivotx -= 2 * tileSize
-                        case "right":
-                            pivotx += 2 * tileSize
-                    vx, vy = 0, 0
-                    for ghost in ghosts:
-                        if ghost.name == "Blinky":
-                            vx = pivotx - ghost.position[0]
-                            vy = pivoty - ghost.position[1]
-                    targetx = pivotx + vx
-                    targety = pivoty + vy
-                    self.pathfindToTarget(walls, ghostDoors, opposite, targetx, targety)
-            case "Clyde": #Shy
-                if self.checkCenter():
-                    if self.findDistance(self.position[0], self.position[1], targetx, targety) <= 8*tileSize:
-                        targetx, targety = 0, height
-                    self.pathfindToTarget(walls, ghostDoors, opposite, targetx, targety)
+                match self.name:
+                    case "Blinky": #Chase
+                        self.pathfindToTarget(walls, ghostDoors, opposite, targetx, targety)
+                    case "Pinky": #Intercept
+                        match target.currentDirection:
+                            case "up":
+                                targetx -= 4 * tileSize
+                                targety -= 4 * tileSize
+                            case "down":
+                                targety += 4 * tileSize
+                            case "left":
+                                targetx -= 4 * tileSize
+                            case "right":
+                                targetx += 4 * tileSize
+                        self.pathfindToTarget(walls, ghostDoors, opposite, targetx, targety)
+                    case "Inky": #Unpredictable
+                        pivotx, pivoty = targetx, targety
+                        match target.currentDirection:
+                            case "up":
+                                pivotx -= 2 * tileSize
+                                pivoty -= 2 * tileSize
+                            case "down":
+                                pivoty += 2 * tileSize
+                            case "left":
+                                pivotx -= 2 * tileSize
+                            case "right":
+                                pivotx += 2 * tileSize
+                        vx, vy = 0, 0
+                        for ghost in ghosts:
+                            if ghost.name == "Blinky":
+                                vx = pivotx - ghost.position[0]
+                                vy = pivoty - ghost.position[1]
+                        targetx = pivotx + vx
+                        targety = pivoty + vy
+                        self.pathfindToTarget(walls, ghostDoors, opposite, targetx, targety)
+                    case "Clyde": #Shy
+                        if self.findDistance(self.position[0], self.position[1], targetx, targety) <= 8*tileSize:
+                            targetx, targety = 0, height
+                        self.pathfindToTarget(walls, ghostDoors, opposite, targetx, targety)
         
         match self.currentDirection:
             case "up":

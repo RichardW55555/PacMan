@@ -61,7 +61,7 @@ class Player(Character):
         
         self.position = position
     
-    def eat(self, pellets, energizers):
+    def eat(self, pellets, energizers, ghosts):
         newPellets = []
         newEnergizers = []
         energizerEaten = False
@@ -94,15 +94,15 @@ class Player(Character):
                     self.hasEatenDotTimer = 2
                     self.munch_sound_index = 1 - self.munch_sound_index
                 
-                energizerEaten = True
-                # Vunerable ghosts
+                for ghost in ghosts:
+                    ghost.scaredTimer = 300 # scared
                 continue
             newEnergizers.append(e)
         energizers = newEnergizers
         pygame.display.set_caption("Score: %s" % (self.score))
-        return pellets, energizers, energizerEaten
+        return pellets, energizers
     
-    def warp(self, warps, pellets, energizers):
+    def warp(self, warps, pellets, energizers, ghosts):
         for w in warps:
             if pygame.Rect(w[0]-tileSize//2, w[1]-tileSize//2, tileSize, tileSize).colliderect(pygame.Rect(self.position[0]-self.size, self.position[1]-self.size, self.size*2, self.size*2)):
                 self.position = warps[warps.index(w)-1]
@@ -113,8 +113,8 @@ class Player(Character):
                     self.position = (self.position[0] - tileSize, self.position[1])
                 
                 #Eat Warped On Pellet
-                return self.eat(pellets, energizers)
-        return pellets, energizers, False
+                return self.eat(pellets, energizers, ghosts)
+        return pellets, energizers
     
     def die(self, ghosts, starts):
         for ghost in ghosts:
@@ -129,6 +129,7 @@ class Player(Character):
                 self.current_img = self.imgDirection["right"]
                 for _, ghost in enumerate(ghosts):
                     ghost.releaseTimer = 0
+                    ghost.scaredTimer = 0
                     ghost.position = starts[ghost.name]
                     ghost.current_img = ghost.imgDirection[""]
                 return True

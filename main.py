@@ -81,16 +81,12 @@ def playLevel():
             PacMan.move(walls, ghostDoors)
 
             #Eat Pellets
-            pellets, energizers, energizerEaten = PacMan.eat(pellets, energizers)
-            if energizerEaten:
-                for ghost in ghosts:
-                    # ghost.becomeVulnerable()
-                    pass
+            pellets, energizers = PacMan.eat(pellets, energizers, ghosts)
 
             #Warp
             for ghost in ghosts:
                 ghost.warp(warps)
-            pellets, energizers, _ = PacMan.warp(warps, pellets, energizers)
+            pellets, energizers = PacMan.warp(warps, pellets, energizers, ghosts)
 
             #Check Ghost Collisions
             if PacMan.die(ghosts, starts) == True:
